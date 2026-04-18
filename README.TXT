@@ -14,7 +14,3 @@ What's inside
 Simple on/off timer switch
 
 Clean, responsive design
-
-Open the app
-Save the HTML file and open it in any browser. No installation or internet needed.
-
