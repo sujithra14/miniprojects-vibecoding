@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PM Edition · Random Topic Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f2f8 0%, #e6e9f0 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* main card */
+        .pm-card {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 56px;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.25), 0 8px 18px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header */
+        .pm-header {
+            background: #1e2b3c;
+            padding: 1.2rem 2rem;
+            color: white;
+        }
+
+        .pm-header h1 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .badge-pm {
+            background: #f9a826;
+            color: #1e2b3c;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 60px;
+            letter-spacing: 0.3px;
+        }
+
+        .sub {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* topic area */
+        .topic-stage {
+            background: #ffffff;
+            margin: 20px 28px 16px 28px;
+            padding: 2rem 1.5rem;
+            border-radius: 48px;
+            box-shadow: inset 0 1px 3px #00000008, 0 12px 24px -12px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .topic-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #6c7a89;
+            margin-bottom: 12px;
+        }
+
+        .topic-text {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.35;
+            color: #0f2b3b;
+            background: #f9fcff;
+            padding: 0.8rem 1.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        /* timer panel */
+        .timer-panel {
+            background: #f8fafd;
+            margin: 0 28px 16px 28px;
+            border-radius: 48px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #eef2f8;
+        }
+
+        .timer-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            padding: 6px 16px;
+            border-radius: 100px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2c3e4e;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.25s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.25s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #f9a826;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .timer-status {
+            font-size: 0.8rem;
+            background: #eef2fa;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #1f4a6e;
+        }
+
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.6rem;
+            background: #1e2b3c;
+            color: #f9d56e;
+            padding: 0.1rem 1rem;
+            border-radius: 60px;
+            letter-spacing: 2px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* button zone */
+        .action-area {
+            display: flex;
+            justify-content: center;
+            margin: 8px 28px 28px 28px;
+        }
+
+        .generate-btn {
+            background: #1e2b3c;
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 14px 28px;
+            width: 100%;
+            border-radius: 80px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 8px 18px -8px rgba(0,0,0,0.2);
+            font-family: inherit;
+        }
+
+        .generate-btn:hover {
+            background: #f9a826;
+            color: #1e2b3c;
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* topic list (inspiration) */
+        .topic-hint {
+            margin: 0 28px 20px 28px;
+            padding: 0 0 10px 0;
+            font-size: 0.7rem;
+            color: #6b7f8f;
+            text-align: center;
+            border-top: 1px dashed #dee4ec;
+            padding-top: 14px;
+        }
+
+        /* responsive */
+        @media (max-width: 550px) {
+            .pm-card {
+                border-radius: 32px;
+            }
+            .topic-text {
+                font-size: 1.3rem;
+            }
+            .timer-display {
+                font-size: 1.3rem;
+                min-width: 100px;
+            }
+            .timer-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .generate-btn {
+                font-size: 1.1rem;
+                padding: 12px 18px;
+            }
+            .topic-stage {
+                margin: 16px 16px 16px 16px;
+                padding: 1.5rem 1rem;
+            }
+            .pm-header h1 {
+                font-size: 1.35rem;
+            }
+        }
+
+        footer {
+            font-size: 0.65rem;
+            text-align: center;
+            background: #f0f3f9;
+            padding: 10px;
+            color: #6c7e8e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="pm-card">
+    <div class="pm-header">
+        <h1>
+            🎯 PM Topic Spark
+            <span class="badge-pm">product manager edition</span>
+        </h1>
+        <div class="sub">One‑click topics · strategic prompts · timer on/off</div>
+    </div>
+
+    <div class="topic-stage">
+        <div class="topic-label">🎲 TODAY'S PRODUCT CHALLENGE</div>
+        <div class="topic-text" id="topicDisplay">
+            Click "Generate" to start
+        </div>
+    </div>
+
+    <div class="timer-panel">
+        <div class="timer-toggle">
+            <span class="toggle-label">⏱️ Enable timer</span>
+            <label class="switch">
+                <input type="checkbox" id="timerToggleCheckbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="timer-status" id="timerStatusText">
+            Timer is OFF
+        </div>
+        <div class="timer-display" id="timerDisplayValue">
+            --:--
+        </div>
+    </div>
+
+    <div class="action-area">
+        <button class="generate-btn" id="generateBtn">
+            ⚡ Generate random topic
+        </button>
+    </div>
+    <div class="topic-hint">
+        💡 Product manager edition: prioritization, GTM, user stories, metrics, A/B tests, roadmaps & more.
+    </div>
+    <footer>
+        🧠 Timer off = unlimited thinking. Timer on = 2 minutes sprint (default for PM challenges)
+    </footer>
+</div>
+
+<script>
+    // ========================
+    // 1. PM TOPICS (handcrafted for product managers)
+    // ========================
+    const PM_TOPICS = [
+        "Define success metrics for a new freemium feature.",
+        "How would you prioritize between tech debt and new customer requests?",
+        "Draft a one-sentence product vision for a remote collaboration tool.",
+        "Write 3 user stories for a 'dark mode' feature in a SaaS dashboard.",
+        "What A/B test would you run to improve onboarding activation?",
+        "Create a RICE score breakdown for two competing initiatives.",
+        "Outline a go-to-market strategy for an AI productivity assistant.",
+        "What are the top 3 risks when launching a mobile app update?",
+        "How would you handle stakeholder disagreement about scope?",
+        "Design a feedback loop to capture user pain points post-launch.",
+        "Propose a pivot strategy if retention drops after release.",
+        "Write an executive summary for a new analytics module.",
+        "Describe the ideal MVP for a marketplace platform.",
+        "What unit economics would you track for a subscription box?",
+        "Create a competitive positioning map vs top 3 rivals.",
+        "Define 3 leading indicators for product-market fit.",
+        "Build a simple product roadmap for next quarter (3 themes).",
+        "How do you validate pricing before implementation?",
+        "Write a product requirement doc for a search filter enhancement.",
+        "Plan a customer discovery session for an underserved segment.",
+        "What's your framework to kill a low-impact feature?",
+        "Develop a beta testing strategy with 100 early adopters.",
+        "Draft a launch email to announce a major feature.",
+        "How to measure 'delight' in a B2B software product?",
+        "Create a user journey map for a first-time dashboard login.",
+        "What experiments would de-risk a major architecture change?",
+        "Propose a feature flag strategy for gradual rollout.",
+        "Define product adoption stages: awareness -> power user.",
+        "How would you align sales & product on a new pricing tier?",
+        "Write a PR FAQ for a controversial design change.","How would you improve onboarding for a fintech app targeting first-time investors?", "What does “successful onboarding” mean in a fintech product?", "Where do you expect maximum drop-offs in an investment app onboarding flow and why?", "How would you reduce KYC-related friction?", "How would you design onboarding for users who have never invested before?", "What are the biggest fears of a first-time investor?", "Why do users complete KYC but never invest?", "How would you build trust during onboarding?", "How do you reduce decision paralysis in investing apps?", "How would you simplify financial jargon for beginners?", "How would you redesign the KYC experience end-to-end?", "What steps would you remove or combine in onboarding?", "How would you design a “documents checklist” feature?", "What would an ideal first-time user journey look like from signup to first investment?", "How would you personalize onboarding for different user types?", "What metrics would you track for onboarding success?", "How would you measure activation in a fintech app?", "Design an A/B test to improve onboarding conversion", "How would you identify the biggest bottleneck in onboarding?", "What leading indicators predict whether a user will invest?", "Should onboarding prioritize speed or education?", "How much education is too much in onboarding?", "Would you gate features behind KYC or allow exploration first?", "How would you balance compliance vs user experience?", "When should onboarding end and core product experience begin?", "How would you use Generative AI to improve onboarding?", "Would you add an AI advisor during onboarding?", "How would you prevent misleading financial advice in AI-driven onboarding?", "Can AI reduce drop-offs in KYC? How?", "How would you onboard users with low financial literacy in Tier-2/3 cities?", "What if users don’t have required KYC documents?", "How would you design onboarding for users with low trust in digital finance?", "How would you onboard users who are afraid of losing money?", "What would you do if onboarding completion is high but investments are low?"
+    ];
+
+    // additional fallback topics to make it richer
+    const EXTRA_TOPICS = [
+        "Retrospective: what would you change about last sprint?",
+        "Build a customer feedback taxonomy.",
+        "Outline a product council charter.",
+        "Describe your ideal product analytics stack.",
+        "What's the biggest assumption in your current roadmap?"
+    ];
+    const ALL_TOPICS = [...PM_TOPICS, ...EXTRA_TOPICS];
+
+    // ========================
+    // 2. DOM elements
+    // ========================
+    const generateBtn = document.getElementById('generateBtn');
+    const topicDisplaySpan = document.getElementById('topicDisplay');
+    const timerToggleCheckbox = document.getElementById('timerToggleCheckbox');
+    const timerStatusSpan = document.getElementById('timerStatusText');
+    const timerDisplayDiv = document.getElementById('timerDisplayValue');
+
+    // ========================
+    // 3. Timer state
+    // ========================
+    let timerInterval = null;          // setInterval id
+    let timerSecondsLeft = 0;          // current remaining seconds
+    let isTimerActive = false;          // whether countdown is running
+    let timerEnabled = false;            // user wants timer ON (checkbox state)
+    
+    // Default timer duration (2 minutes = 120 seconds) -> PM edition sprint
+    const DEFAULT_TIMER_SEC = 120;       // 2 minutes
+
+    // ========================
+    // 4. Helper functions
+    // ========================
+    function formatTime(secondsTotal) {
+        if (secondsTotal === undefined || secondsTotal === null || secondsTotal < 0) {
+            secondsTotal = 0;
+        }
+        const mins = Math.floor(secondsTotal / 60);
+        const secs = secondsTotal % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Stop any running timer, reset UI display and internal flags
+    function stopAndResetTimerUI() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        isTimerActive = false;
+        timerSecondsLeft = DEFAULT_TIMER_SEC;
+        // show default display but based on timerEnabled? we prefer to show "--:--" when timer off, but when timer on we show 02:00
+        if (timerEnabled) {
+            timerDisplayDiv.textContent = formatTime(DEFAULT_TIMER_SEC);
+            timerDisplayDiv.style.opacity = '1';
+        } else {
+            timerDisplayDiv.textContent = '--:--';
+        }
+    }
+
+    // This will start a fresh timer from DEFAULT_TIMER_SEC, only if timerEnabled = true and there is no active timer
+    function startNewTimer() {
+        // kill any existing timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (!timerEnabled) {
+            // timer is disabled by user, no countdown
+            isTimerActive = false;
+            timerDisplayDiv.textContent = '--:--';
+            timerStatusSpan.textContent = 'Timer is OFF';
+            return;
+        }
+        
+        // timer enabled: start countdown from DEFAULT_TIMER_SEC
+        timerSecondsLeft = DEFAULT_TIMER_SEC;
+        isTimerActive = true;
+        timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+        timerStatusSpan.textContent = '⏳ Countdown running';
+        
+        timerInterval = setInterval(() => {
+            if (!timerEnabled) {
+                // edge: if during interval timer gets disabled, we clean up
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                isTimerActive = false;
+                timerDisplayDiv.textContent = '--:--';
+                timerStatusSpan.textContent = 'Timer is OFF';
+                return;
+            }
+            
+            if (timerSecondsLeft <= 1) {
+                // timer reaches zero
+                if (timerSecondsLeft === 1) {
+                    timerSecondsLeft = 0;
+                    timerDisplayDiv.textContent = formatTime(0);
+                }
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                isTimerActive = false;
+                timerDisplayDiv.textContent = formatTime(0);
+                timerStatusSpan.textContent = '⏰ Time\'s up! Generate new topic?';
+                // add a small style flash for attention
+                timerDisplayDiv.style.animation = 'none';
+                timerDisplayDiv.offsetHeight; // trigger reflow
+                timerDisplayDiv.style.animation = 'flashBg 0.4s ease';
+                setTimeout(() => { if(timerDisplayDiv) timerDisplayDiv.style.animation = ''; }, 400);
+            } else {
+                timerSecondsLeft--;
+                timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+            }
+        }, 1000);
+    }
+    
+    // Generate a random topic and update display. Also reset timer if needed (based on "off/on")
+    function generateRandomTopic() {
+        // pick random topic from ALL_TOPICS
+        const randomIndex = Math.floor(Math.random() * ALL_TOPICS.length);
+        const freshTopic = ALL_TOPICS[randomIndex];
+        topicDisplaySpan.textContent = freshTopic;
+        
+        // Stop any existing interval to avoid inconsistency
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        // get the latest timerEnabled from checkbox (user might have changed it)
+        timerEnabled = timerToggleCheckbox.checked;
+        
+        if (!timerEnabled) {
+            // Timer is OFF -> no timer for this question, display clean
+            isTimerActive = false;
+            timerDisplayDiv.textContent = '--:--';
+            timerStatusSpan.textContent = 'Timer is OFF';
+        } else {
+            // Timer ON: start fresh countdown for the new generated question
+            timerSecondsLeft = DEFAULT_TIMER_SEC;
+            isTimerActive = true;
+            timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+            timerStatusSpan.textContent = '⏳ Countdown running';
+            timerInterval = setInterval(() => {
+                // guard: check if timer still enabled (could be disabled mid-count)
+                if (!timerToggleCheckbox.checked) {
+                    // timer got turned off while countdown running
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = null;
+                    isTimerActive = false;
+                    timerDisplayDiv.textContent = '--:--';
+                    timerStatusSpan.textContent = 'Timer is OFF';
+                    return;
+                }
+                if (timerSecondsLeft <= 1) {
+                    if (timerSecondsLeft === 1) {
+                        timerSecondsLeft = 0;
+                        timerDisplayDiv.textContent = formatTime(0);
+                    }
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                    }
+                    isTimerActive = false;
+                    timerDisplayDiv.textContent = formatTime(0);
+                    timerStatusSpan.textContent = '⏰ Time\'s up! Generate new topic?';
+                    // flash effect
+                    timerDisplayDiv.style.animation = 'none';
+                    timerDisplayDiv.offsetHeight;
+                    timerDisplayDiv.style.animation = 'flashBg 0.4s ease';
+                    setTimeout(() => { if(timerDisplayDiv) timerDisplayDiv.style.animation = ''; }, 400);
+                } else {
+                    timerSecondsLeft--;
+                    timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+                }
+            }, 1000);
+        }
+    }
+    
+    // listen to checkbox changes and update the timer behavior globally, without resetting topic (but timer mode changes)
+    function onTimerToggleChange() {
+        const newState = timerToggleCheckbox.checked;
+        // if newState is true -> turn timer on, if false -> turn off
+        if (!newState) {
+            // turning OFF: stop any timer, reset display to '--:--'
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerEnabled = false;
+            isTimerActive = false;
+            timerDisplayDiv.textContent = '--:--';
+            timerStatusSpan.textContent = 'Timer is OFF';
+        } else {
+            // turning ON: enable timer, start fresh countdown, even if topic is same, timer restarts for the current topic
+            timerEnabled = true;
+            // kill old interval
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            // start new countdown for currently displayed topic (respect PM logic: when you enable timer, it should start timing the current question)
+            timerSecondsLeft = DEFAULT_TIMER_SEC;
+            isTimerActive = true;
+            timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+            timerStatusSpan.textContent = '⏳ Countdown running';
+            timerInterval = setInterval(() => {
+                // additional check: if checkbox becomes unchecked during interval -> kill
+                if (!timerToggleCheckbox.checked) {
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerEnabled = false;
+                    isTimerActive = false;
+                    timerDisplayDiv.textContent = '--:--';
+                    timerStatusSpan.textContent = 'Timer is OFF';
+                    return;
+                }
+                if (timerSecondsLeft <= 1) {
+                    if (timerSecondsLeft === 1) timerSecondsLeft = 0;
+                    timerDisplayDiv.textContent = formatTime(0);
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerInterval = null;
+                    isTimerActive = false;
+                    timerStatusSpan.textContent = '⏰ Time\'s up! Generate new topic?';
+                    timerDisplayDiv.style.animation = 'none';
+                    timerDisplayDiv.offsetHeight;
+                    timerDisplayDiv.style.animation = 'flashBg 0.4s ease';
+                    setTimeout(() => { if(timerDisplayDiv) timerDisplayDiv.style.animation = ''; }, 400);
+                } else {
+                    timerSecondsLeft--;
+                    timerDisplayDiv.textContent = formatTime(timerSecondsLeft);
+                }
+            }, 1000);
+        }
+    }
+    
+    // Additional micro animation style
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+        @keyframes flashBg {
+            0% { background-color: #f9a82630; transform: scale(1);}
+            50% { background-color: #f9a82680; transform: scale(1.02);}
+            100% { background-color: transparent; transform: scale(1);}
+        }
+        .timer-display {
+            transition: all 0.1s ease;
+        }
+    `;
+    document.head.appendChild(styleSheet);
+    
+    // Initialize state on page load
+    function init() {
+        // default: timer OFF (checkbox unchecked)
+        timerToggleCheckbox.checked = false;
+        timerEnabled = false;
+        isTimerActive = false;
+        timerDisplayDiv.textContent = '--:--';
+        timerStatusSpan.textContent = 'Timer is OFF';
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        // set a default welcome topic
+        topicDisplaySpan.textContent = "Click 'Generate' to get a PM topic";
+        
+        // add event listeners
+        generateBtn.addEventListener('click', () => {
+            generateRandomTopic();
+        });
+        
+        timerToggleCheckbox.addEventListener('change', () => {
+            onTimerToggleChange();
+        });
+    }
+    
+    // generateRandomTopic already covers perfect logic with timerEnabled fresh read.
+    init();
+</script>
+</body>
+</html>
