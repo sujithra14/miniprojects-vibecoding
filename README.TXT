@@ -1,4 +1,4 @@
-PM Topic Generator
+PM Topic Generator - Interview Edition
 A one-click random topic generator for Product Managers. Includes an optional timer.
 
 How it works
