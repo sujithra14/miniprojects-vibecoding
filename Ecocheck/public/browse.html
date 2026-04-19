@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Brands - EcoCheck</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EcoCheck">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark eco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-leaf me-2"></i>
+                <strong>EcoCheck</strong>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="browse.html">Browse Brands</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Browse Brands Header -->
+    <section class="browse-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Title & Subtitle -->
+                    <div class="hero-content mb-3">
+                        <h1 class="browse-title mb-2">Browse All Brands</h1>
+                        <p class="browse-subtitle">
+                            Explore our comprehensive database of brands and their sustainability ratings
+                        </p>
+                    </div>
+
+                    <!-- Add this after the search input group -->
+                    <div class="search-actions mt-3">
+                        <a href="#" class="text-decoration-none filter-link" data-bs-toggle="modal"
+                            data-bs-target="#filterModal">
+                            <i class="fas fa-filter me-1"></i>Filter by Sustainability Criteria
+                        </a>
+                    </div>
+
+                    <!-- Search directly below subtitle -->
+                    <div class="search-filter-container mb-4">
+                        <div class="input-group search-group">
+                            <input type="text" id="browseSearch" class="form-control search-input"
+                                placeholder="Search brands..." />
+                            <button class="btn btn-success search-btn" onclick="filterBrands()">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Keep the HTML but hide it -->
+                <div class="d-flex justify-content-lg-end">
+                    <select id="sortSelect" class="form-select" onchange="sortBrands()"
+                        style="max-width: 200px; display: none;">
+                        <option value="name">Sort by Name</option>
+                        <option value="rating-desc">Sort by Rating (High to Low)</option>
+                        <option value="rating-asc">Sort by Rating (Low to High)</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+        </div>
+        </div>
+    </section>
+
+
+    <!-- Brands Grid Section -->
+    <section class="browse-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Brands count and pagination info -->
+                    <div class="brands-meta mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Left side: Showing X-Y of Z brands -->
+                            <div id="paginationInfo" class="text-muted">
+                                Showing 1-10 of 49 brands
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <!-- Brands Grid -->
+                    <div id="brandsGrid" class="row">
+                        <!-- Brands will be loaded here -->
+                    </div>
+                    <!-- Right side: Pagination controls -->
+                    <div id="paginationControls" class="d-flex align-items-center">
+                        <!-- Previous Button (left arrow) -->
+                        <button id="prevPageBtn" class="btn btn-sm btn-outline-secondary me-2 pagination-arrow"
+                            disabled>
+                            &lt;
+                        </button>
+
+                        <!-- Page Numbers -->
+                        <div class="page-numbers d-flex gap-1" id="pageNumbers">
+                            <!-- Page numbers will be dynamically generated -->
+                        </div>
+
+                        <!-- Next Button (right arrow) -->
+                        <button id="nextPageBtn" class="btn btn-sm btn-outline-secondary ms-2 pagination-arrow">
+                            &gt;
+                        </button>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="text-center py-5">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading brands...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Loading brands database...</p>
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="noResults" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No brands found</h4>
+                        <p class="text-muted">Try adjusting your search or filter criteria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="eco-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-leaf me-2"></i>EcoCheck</h5>
+                    <p>Empowering conscious consumers to make sustainable choices.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 EcoCheck. Making sustainability transparent.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Filter Modal -->
+    <div class="modal fade eco-modal" id="filterModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-filter me-2 text-success"></i>Filter Sustainable Brands
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filterForm">
+                        <!-- Category Filter 
+            <div class="filter-section mb-4">
+              <h6 class="filter-section-title">
+                <i class="fas fa-tags me-2"></i>Category
+              </h6>
+              <div class="filter-options">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filter-fashion" value="fashion" checked>
+                  <label class="form-check-label" for="filter-fashion">Fashion & Apparel</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filter-beauty" value="beauty">
+                  <label class="form-check-label" for="filter-beauty">Beauty & Cosmetics</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="filter-home" value="home">
+                  <label class="form-check-label" for="filter-home">Home & Living</label>
+                </div>
+              </div>
+            </div>-->
+
+                        <!-- Sustainability Certifications
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">
+                                <i class="fas fa-award me-2"></i>Certifications
+                            </h6>
+                            <div class="filter-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filter-bcorp" value="bcorp">
+                                    <label class="form-check-label" for="filter-bcorp">B Corp Certified</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filter-organic" value="organic">
+                                    <label class="form-check-label" for="filter-organic">Organic Materials</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filter-fairtrade"
+                                        value="fairtrade">
+                                    <label class="form-check-label" for="filter-fairtrade">Fair Trade</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filter-vegan" value="vegan">
+                                    <label class="form-check-label" for="filter-vegan">Vegan Certified</label>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- In browse.html, update the filter modal -->
+                        <div class="filter-section mb-4">
+                            <h6 class="filter-section-title">
+                                <i class="fas fa-star me-2"></i>Eco Rating Filter
+                            </h6>
+
+                            <!-- Rating comparison type -->
+                            <div class="mb-3">
+                                <label class="form-label small">Filter type:</label>
+                                <div class="d-flex gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ratingFilterType"
+                                            id="ratingExact" value="exact" checked>
+                                        <label class="form-check-label small" for="ratingExact">
+                                            Exact rating
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ratingFilterType"
+                                            id="ratingLessEqual" value="lessEqual">
+                                        <label class="form-check-label small" for="ratingLessEqual">
+                                            ≤ Rating
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ratingFilterType"
+                                            id="ratingGreaterEqual" value="greaterEqual">
+                                        <label class="form-check-label small" for="ratingGreaterEqual">
+                                            ≥ Rating
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating value -->
+                            <div class="rating-slider">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span id="ratingValue" class="text-success fw-bold">All ratings</span>
+                                    <span class="text-muted">5.0★</span>
+                                </div>
+                                <input type="range" class="form-range" id="ratingFilter" min="0" max="5" step="0.5"
+                                    value="0">
+                                <div class="rating-labels d-flex justify-content-between">
+                                    <small>All</small>
+                                    <small>1★</small>
+                                    <small>2★</small>
+                                    <small>3★</small>
+                                    <small>4★</small>
+                                    <small>5★</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Range 
+            <div class="filter-section mb-4">
+              <h6 class="filter-section-title">
+                <i class="fas fa-money-bill-wave me-2"></i>Price Range
+              </h6>
+              <div class="price-range">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge bg-light text-dark">$</span>
+                  <span class="badge bg-light text-dark">$$$</span>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="priceRange" id="price-all" value="all" checked>
+                  <label class="form-check-label" for="price-all">All Prices</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="priceRange" id="price-budget" value="budget">
+                  <label class="form-check-label" for="price-budget">Budget Friendly ($)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="priceRange" id="price-mid" value="mid">
+                  <label class="form-check-label" for="price-mid">Mid Range ($$)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="priceRange" id="price-premium" value="premium">
+                  <label class="form-check-label" for="price-premium">Premium ($$$)</label>
+                </div>
+              </div>
+            </div>-->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="applyFilters">
+                        <i class="fas fa-check me-1"></i>Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brand Details Modal -->
+    <div class="modal fade" id="brandModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="brandModalLabel">Brand Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="brandModalBody">
+                    <!-- Brand details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="visitWebsiteBtn" style="display: none;">
+                        <i class="fas fa-external-link-alt me-2"></i>Visit Website
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="browse-script.js"></script>
+</body>
+
+</html>
