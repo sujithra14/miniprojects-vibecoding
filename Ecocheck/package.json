@@ -1,0 +1,23 @@
+{
+  "name": "conscious-consumer",
+  "version": "1.0.0",
+  "description": "EcoCheck - Conscious Consumer Brand Checker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server-simple.js",
+    "dev": "node server-simple.js",
+    "start-original": "node server.js",
+    "start-simple": "node server-simple.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3"
+  },
+  "keywords": ["sustainability", "brands", "eco-friendly"],
+  "author": "Your Name",
+  "license": "MIT"
+}
+
+
