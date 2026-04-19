@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Pause & Redirect - Anger Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* Prevents accidental text selection during anger taps */
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: #0a0c12;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+
+        /* Main app container */
+        .app {
+            max-width: 500px;
+            width: 100%;
+            background: #0f1117;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+            padding: 24px 20px 32px;
+            transition: all 0.2s ease;
+        }
+
+        /* Screen visibility */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Headings */
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #f5f3f0;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            color: #8e8e9e;
+            font-size: 15px;
+            margin-bottom: 32px;
+            border-left: 3px solid #e67e22;
+            padding-left: 12px;
+        }
+
+        /* Big anger button */
+        .anger-btn {
+            width: 100%;
+            background: #e03a3a;
+            border: none;
+            border-radius: 80px;
+            padding: 32px 16px;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 8px 0 #8b1e1e;
+            margin: 20px 0 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .anger-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #8b1e1e;
+        }
+
+        /* Slider */
+        .slider-container {
+            background: #1a1d26;
+            border-radius: 60px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #cdcddf;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #2c2f3a;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            background: #e67e22;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px black;
+            border: none;
+        }
+
+        .intensity-value {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 12px;
+            color: #e67e22;
+        }
+
+        /* Breathing circle */
+        .breathing-area {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .breath-circle {
+            width: 180px;
+            height: 180px;
+            background: #2c3e66;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 28px;
+            transition: all 0.1s linear;
+            box-shadow: 0 0 20px rgba(230,126,34,0.3);
+        }
+
+        .breath-text {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 12px 0;
+            color: #e6e6fa;
+        }
+
+        .timer-display {
+            font-size: 44px;
+            font-family: monospace;
+            font-weight: 700;
+            letter-spacing: 4px;
+            background: #00000044;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 60px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: #2c2f3a;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #eee;
+            cursor: pointer;
+            margin: 8px 6px;
+            transition: 0.1s;
+        }
+
+        .btn-primary {
+            background: #e67e22;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .redirect-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .redirect-card {
+            background: #1a1d26;
+            border-radius: 40px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: 0.05s linear;
+            border: 1px solid #2f323e;
+        }
+
+        .redirect-card:active {
+            background: #2a2e3b;
+            transform: scale(0.98);
+        }
+
+        .redirect-emoji {
+            font-size: 32px;
+        }
+
+        .redirect-text {
+            font-size: 17px;
+            font-weight: 500;
+            color: #f0f0f0;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 24px;
+            background: #1e2a1f;
+            padding: 16px;
+            border-radius: 40px;
+            color: #b9fbc0;
+            font-weight: 500;
+        }
+
+        .small-note {
+            font-size: 12px;
+            color: #6c6f7c;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        button {
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <!-- SCREEN 1: HOME with anger intensity slider -->
+    <div id="homeScreen" class="screen active">
+        <h1>🧘 Pause & Redirect</h1>
+        <div class="sub">Anger is a wave — let it pass, don't fight it.</div>
+
+        <div class="slider-container">
+            <div class="slider-label">
+                <span>😌 Calm</span>
+                <span>💢 Explosive</span>
+            </div>
+            <input type="range" id="angerSlider" min="0" max="10" value="6" step="1">
+            <div class="intensity-value" id="sliderValue">6 / 10</div>
+        </div>
+
+        <button class="anger-btn" id="panicBtn">⚡ I'M ANGRY NOW ⚡</button>
+        <div class="small-note">Tap the red button when anger rises. No judgment, just a pause.</div>
+    </div>
+
+    <!-- SCREEN 2: BREATHING GUIDE -->
+    <div id="breathingScreen" class="screen">
+        <h1>🌬️ Breathe with me</h1>
+        <div class="sub">One cycle is enough to reset.</div>
+
+        <div class="breathing-area">
+            <div class="breath-circle" id="breathCircle">💨</div>
+            <div class="breath-text" id="breathInstruction">Inhale...</div>
+            <div class="timer-display" id="breathTimer">4</div>
+        </div>
+
+        <button class="btn btn-primary" id="skipBreathingBtn" style="width:100%">✔️ I'm ready to redirect</button>
+    </div>
+
+    <!-- SCREEN 3: REDIRECT MENU (actions) -->
+    <div id="redirectScreen" class="screen">
+        <h1>🔄 Choose a reset</h1>
+        <div class="sub">Pick one simple action, do it now.</div>
+
+        <div class="redirect-grid" id="redirectList">
+            <!-- filled by js but static fallback -->
+        </div>
+
+        <button class="btn" id="backToHomeAfterRedirect" style="width:100%; margin-top:12px;">← Back home</button>
+        <div id="postActionFeedback" class="feedback" style="display:none;"></div>
+    </div>
+
+    <!-- SCREEN 4: final relief check -->
+    <div id="reliefScreen" class="screen">
+        <h1>✅ How do you feel now?</h1>
+        <div class="sub">Let's see the drop in anger.</div>
+
+        <div class="slider-container">
+            <div class="slider-label">
+                <span>😌 Calm</span>
+                <span>😤 Still angry</span>
+            </div>
+            <input type="range" id="reliefSlider" min="0" max="10" value="3" step="1">
+            <div class="intensity-value" id="reliefValue">3 / 10</div>
+        </div>
+
+        <button class="btn btn-primary" id="finishReliefBtn" style="width:100%">📊 See improvement</button>
+        <div id="improvementMsg" style="margin-top: 20px; text-align:center; font-size:15px; color:#bbb;"></div>
+        <button class="btn" id="homeFromRelief" style="margin-top: 16px; width:100%">🏠 Done — back home</button>
+    </div>
+</div>
+
+<script>
+    // ---------- STATE ----------
+    let initialAnger = 5;   // will be set from slider
+    let finalAnger = null;
+
+    // DOM elements
+    const homeScreen = document.getElementById('homeScreen');
+    const breathingScreen = document.getElementById('breathingScreen');
+    const redirectScreen = document.getElementById('redirectScreen');
+    const reliefScreen = document.getElementById('reliefScreen');
+
+    const angerSlider = document.getElementById('angerSlider');
+    const sliderValueSpan = document.getElementById('sliderValue');
+    const panicBtn = document.getElementById('panicBtn');
+
+    // breathing elements
+    const breathCircle = document.getElementById('breathCircle');
+    const breathInstruction = document.getElementById('breathInstruction');
+    const breathTimerSpan = document.getElementById('breathTimer');
+    const skipBreathingBtn = document.getElementById('skipBreathingBtn');
+
+    // redirect
+    const redirectListDiv = document.getElementById('redirectList');
+    const backToHomeAfterRedirect = document.getElementById('backToHomeAfterRedirect');
+    const postActionFeedback = document.getElementById('postActionFeedback');
+
+    // relief screen
+    const reliefSlider = document.getElementById('reliefSlider');
+    const reliefValueSpan = document.getElementById('reliefValue');
+    const finishReliefBtn = document.getElementById('finishReliefBtn');
+    const improvementMsgDiv = document.getElementById('improvementMsg');
+    const homeFromRelief = document.getElementById('homeFromRelief');
+
+    // helper: show screen
+    function showScreen(screenId) {
+        homeScreen.classList.remove('active');
+        breathingScreen.classList.remove('active');
+        redirectScreen.classList.remove('active');
+        reliefScreen.classList.remove('active');
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    // slider update home
+    angerSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        sliderValueSpan.innerText = val + ' / 10';
+        initialAnger = parseInt(val);
+    });
+
+    reliefSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        reliefValueSpan.innerText = val + ' / 10';
+        finalAnger = parseInt(val);
+    });
+
+    // ---------- BREATHING TIMER (4-7-8 method: inhale 4, hold 7, exhale 8) ----------
+    let breathingInterval = null;
+    let breathStep = 0; // 0: inhale, 1: hold, 2: exhale
+    let breathCounter = 0;
+    let isBreathingActive = false;
+
+    function stopBreathingTimer() {
+        if (breathingInterval) {
+            clearInterval(breathingInterval);
+            breathingInterval = null;
+        }
+        isBreathingActive = false;
+    }
+
+    function startBreathingCycle() {
+        stopBreathingTimer();
+        breathStep = 0;
+        breathCounter = 0;
+        isBreathingActive = true;
+
+        function updateBreath() {
+            if (!isBreathingActive) return;
+
+            if (breathStep === 0) { // inhale 4 sec
+                breathInstruction.innerText = '🌬️ Inhale slowly...';
+                breathCircle.style.transform = 'scale(1)';
+                breathCircle.style.background = '#3a6ea5';
+                let timeLeft = 4 - breathCounter;
+                breathTimerSpan.innerText = timeLeft;
+                if (breathCounter >= 4) {
+                    breathCounter = 0;
+                    breathStep = 1;
+                }
+            } 
+            else if (breathStep === 1) { // hold 7 sec
+                breathInstruction.innerText = '⏸️ Hold...';
+                breathCircle.style.background = '#4e3e66';
+                let timeLeft = 7 - breathCounter;
+                breathTimerSpan.innerText = timeLeft;
+                if (breathCounter >= 7) {
+                    breathCounter = 0;
+                    breathStep = 2;
+                }
+            }
+            else if (breathStep === 2) { // exhale 8 sec
+                breathInstruction.innerText = '💨 Exhale gently...';
+                breathCircle.style.transform = 'scale(0.95)';
+                breathCircle.style.background = '#2c5a4a';
+                let timeLeft = 8 - breathCounter;
+                breathTimerSpan.innerText = timeLeft;
+                if (breathCounter >= 8) {
+                    breathCounter = 0;
+                    breathStep = 0;  // loop again, but we only want 1 cycle? actually keep cycling for 1 full round? Let's make it 1 full cycle then pause. but for anger, one full cycle is enough: after exhale -> stop
+                    // Stop after one full 4-7-8 cycle (total 19 seconds)
+                    stopBreathingTimer();
+                    breathInstruction.innerText = '✅ Ready to redirect';
+                    breathTimerSpan.innerText = '✔️';
+                    breathCircle.style.background = '#2e7d64';
+                    return;
+                }
+            }
+            breathCounter++;
+        }
+
+        breathCounter = 0;
+        updateBreath(); // immediate
+        breathingInterval = setInterval(() => {
+            if (!isBreathingActive) return;
+            updateBreath();
+        }, 1000);
+    }
+
+    // Reset breathing screen each time we show it
+    function resetAndStartBreathing() {
+        stopBreathingTimer();
+        breathStep = 0;
+        breathCounter = 0;
+        breathInstruction.innerText = 'Inhale...';
+        breathTimerSpan.innerText = '4';
+        breathCircle.style.background = '#2c3e66';
+        breathCircle.style.transform = 'scale(1)';
+        startBreathingCycle();
+    }
+
+    // ----- REDIRECT OPTIONS (sensory + grounding) -----
+    const redirectActions = [
+        { emoji: "🧊", text: "Squeeze an ice cube (or cold water on wrists)" },
+        { emoji: "🚶", text: "Step outside for 30 seconds — look at the sky" },
+        { emoji: "👀", text: "Name 5 things you see in the room right now" },
+        { emoji: "📝", text: "Write one sentence: 'Right now I need...'" },
+        { emoji: "💧", text: "Splash cold water on your face" },
+        { emoji: "🎵", text: "Hum your favorite song for 10 seconds" }
+    ];
+
+    function buildRedirectMenu() {
+        redirectListDiv.innerHTML = '';
+        redirectActions.forEach((action, idx) => {
+            const card = document.createElement('div');
+            card.className = 'redirect-card';
+            card.setAttribute('data-action-idx', idx);
+            card.innerHTML = `
+                <div class="redirect-emoji">${action.emoji}</div>
+                <div class="redirect-text">${action.text}</div>
+            `;
+            card.addEventListener('click', (e) => {
+                // user selected an action
+                postActionFeedback.style.display = 'block';
+                postActionFeedback.innerHTML = `✅ You chose: ${action.text}<br>Take a deep breath — you're in control.`;
+                // After 1.5 sec, go to relief screen
+                setTimeout(() => {
+                    showScreen('reliefScreen');
+                    // Prefill relief slider with a guess (lower than initial anger)
+                    let guessedRelief = Math.max(0, initialAnger - 3);
+                    if (guessedRelief < 0) guessedRelief = 1;
+                    reliefSlider.value = guessedRelief;
+                    reliefValueSpan.innerText = guessedRelief + ' / 10';
+                    finalAnger = guessedRelief;
+                    improvementMsgDiv.innerHTML = '';
+                }, 1000);
+            });
+            redirectListDiv.appendChild(card);
+        });
+    }
+
+    // ----- MAIN FLOW -----
+    panicBtn.addEventListener('click', () => {
+        // get initial anger from slider
+        initialAnger = parseInt(angerSlider.value);
+        // show breathing screen & start breathing cycle
+        resetAndStartBreathing();
+        showScreen('breathingScreen');
+    });
+
+    skipBreathingBtn.addEventListener('click', () => {
+        stopBreathingTimer();
+        showScreen('redirectScreen');
+    });
+
+    // after redirect menu -> back home manually
+    backToHomeAfterRedirect.addEventListener('click', () => {
+        stopBreathingTimer();
+        showScreen('homeScreen');
+        postActionFeedback.style.display = 'none';
+        postActionFeedback.innerHTML = '';
+    });
+
+    // relief finish button: compare scores
+    finishReliefBtn.addEventListener('click', () => {
+        let after = parseInt(reliefSlider.value);
+        let before = initialAnger;
+        let reduction = before - after;
+        if (reduction > 0) {
+            improvementMsgDiv.innerHTML = `🧡 Anger dropped from ${before}/10 → ${after}/10. That's progress! You paused the wave.`;
+        } else if (reduction === 0) {
+            improvementMsgDiv.innerHTML = `🤝 Anger is still at ${after}/10. That's okay — the goal is to ride the wave, not erase it. Try another redirect next time.`;
+        } else {
+            improvementMsgDiv.innerHTML = `⚠️ Intensity increased to ${after}/10. That's normal too. Be kind to yourself. Restart the breathing if needed.`;
+        }
+    });
+
+    homeFromRelief.addEventListener('click', () => {
+        showScreen('homeScreen');
+        // reset slider home to default? no, keep user value
+        improvementMsgDiv.innerHTML = '';
+        postActionFeedback.style.display = 'none';
+    });
+
+    // if user leaves breathing screen early, stop breathing timer
+    window.addEventListener('beforeunload', () => {
+        stopBreathingTimer();
+    });
+
+    // initial building
+    buildRedirectMenu();
+    // set initial slider value to 5
+    angerSlider.value = 5;
+    sliderValueSpan.innerText = '5 / 10';
+    initialAnger = 5;
+
+    // bonus: haptic feedback on panic button for mobile (if supported)
+    panicBtn.addEventListener('touchstart', () => {
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
+    });
+</script>
+</body>
+</html>
